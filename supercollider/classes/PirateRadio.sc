@@ -47,6 +47,9 @@ PirateRadio {
 	// final output synth
 	var outputSynth;
 
+	//--- osc function
+	var oscTrigger;
+
 	//--------------------
 	//----- class methods
 
@@ -73,6 +76,15 @@ PirateRadio {
 		numStreams=streamNum+loopNum;
 
 		if (fileLocation.isNil, { fileLocation = fileLocationPath; });
+
+		//--------------------
+		//-- create osc trigger
+		oscTrigger =  OSCFunc({ arg msg, time;
+		    // [time, msg].postln;
+		    if (msg[2]==1,{
+			    NetAddr("127.0.0.1", 10111).sendMsg("strength",msg[3]);
+		    });
+		},'/tr', server.addr);
 
 		//--------------------
 		//-- create busses
@@ -232,6 +244,7 @@ PirateRadio {
 		strengthBusses.do({ arg bus; bus.free; });
 		"pkill -f oggdec".systemCmd;
 		"rm -rf /dev/shm/sc3mp3*".systemCmd;
+		oscTrigger.free;
 	}
 }
 
@@ -763,6 +776,7 @@ PradStreamSelector {
 
 			// noise is attenuated by inverse of total strength
 			totalstrength=Clip.kr(Mix.new(strengths.collect({arg s; s})));
+			SendTrig.kr(Impulse.kr(10),1,totalstrength);
 
 			// lose frames based on the strength
 			mix=WaveLoss.ar(mix,LinLin.kr(totalstrength,0,1,90,0),100,2);

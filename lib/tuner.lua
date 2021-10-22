@@ -3,20 +3,20 @@
 
 -------------------------------------------
 
-local tuner = {}
+local tuner={}
 
-tuner.components = {}
+tuner.components={}
 
 function tuner.init()
-  if debug == true then
-    tc = tuner.components
+  if debug==true then
+    tc=tuner.components
   end
 
-  tuner.build_ui()  
+  tuner.build_ui()
 end
 
 function tuner.build_ui()
-  local dial_slider_args = {
+  local dial_slider_args={
     x=5,
     y=5,
     width=SCREEN_SIZE.x-9,
@@ -24,11 +24,11 @@ function tuner.build_ui()
     orientation='h',
     border=true,
     selected=true,
-    tick_position = 'before',
+    tick_position='before',
     tick_labels=tuner_labels,
     tick_values=tuner_values
   }
-  tuner.dialer = Slider:new(dial_slider_args)
+  tuner.dialer=Slider:new(dial_slider_args)
   tuner.dialer.pointer_loc_callback=function(loc)
     loc=util.linlin(dial_slider_args.x,dial_slider_args.x+dial_slider_args.width,70,150,loc)
     print("tuner: setting dial to "..loc)
@@ -38,13 +38,13 @@ function tuner.build_ui()
   table.insert(tuner.components,tuner.dialer)
 end
 
-
 function tuner:redraw()
   -- draw the ui here
   for i=1,#tuner.components,1 do
     tuner.components[i]:redraw()
   end
   screen.move(120,40)
+  screen.level(math.floor(util.linexp(0,1,2,15.9,oscin.strength)))
   screen.font_size(24)
   screen.text_right(string.format("%2.2f",params:get("dial")))
   screen.font_size(8)
