@@ -32,6 +32,7 @@ function tuner.build_ui()
   tuner.dialer.pointer_loc_callback=function(loc)
     loc=util.linlin(dial_slider_args.x,dial_slider_args.x+dial_slider_args.width,70,150,loc)
     print("tuner: setting dial to "..loc)
+    params:set("dial",loc)
     engine.dial(loc)
   end
   table.insert(tuner.components,tuner.dialer)
@@ -43,6 +44,10 @@ function tuner:redraw()
   for i=1,#tuner.components,1 do
     tuner.components[i]:redraw()
   end
+  screen.move(120,40)
+  screen.font_size(24)
+  screen.text_right(string.format("%2.2f",params:get("dial")))
+  screen.font_size(8)
 end
 
 return tuner
